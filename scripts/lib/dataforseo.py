@@ -141,7 +141,7 @@ class DataForSEOClient:
         if not result:
             return {"organic": [], "paa": [], "featured_snippet": None}
 
-        items = result[0].get("items", [])
+        items = result[0].get("items") or []
 
         organic = []
         paa_questions = []
@@ -196,7 +196,7 @@ class DataForSEOClient:
         if not result:
             return []
 
-        items = result[0].get("items", [])
+        items = result[0].get("items") or []
         keywords = []
 
         for item in items:
@@ -205,12 +205,12 @@ class DataForSEOClient:
             keywords.append(
                 {
                     "keyword": kw_data.get("keyword", ""),
-                    "volume": keyword_info.get("search_volume", 0),
-                    "cpc": keyword_info.get("cpc", 0),
-                    "competition": keyword_info.get("competition", 0),
-                    "difficulty": kw_data.get(
+                    "volume": keyword_info.get("search_volume") or 0,
+                    "cpc": keyword_info.get("cpc") or 0,
+                    "competition": keyword_info.get("competition") or 0,
+                    "difficulty": (kw_data.get(
                         "keyword_properties", {}
-                    ).get("keyword_difficulty", 0),
+                    ) or {}).get("keyword_difficulty") or 0,
                 }
             )
 
