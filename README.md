@@ -2,8 +2,8 @@
 
 ### One command. Competitive data in. Ranking pages out.
 
-```
-claude install-skill gbessoni/seobuild-onpage
+```bash
+git clone https://github.com/gbessoni/seobuild-onpage.git ~/.claude/skills/seobuild-onpage
 ```
 
 Most SEO tools tell you what's wrong with your site. This one writes the pages.
@@ -292,31 +292,31 @@ No keys at all? The skill falls back to web search. You lose precision but the w
 
 ### Step 1: Install the skill
 
-Pick your platform:
-
 **Claude Code (Mac app / CLI):**
-1. Download the [latest release zip](https://github.com/gbessoni/seo-agi/archive/refs/heads/main.zip)
-2. In Claude Code, go to **Settings > Skills > Upload skill**
-3. Drag the `.zip` file into the upload dialog
-
-Or install via CLI:
 ```bash
-claude install-skill gbessoni/seobuild-onpage
+git clone https://github.com/gbessoni/seobuild-onpage.git ~/.claude/skills/seobuild-onpage
 ```
 
 **OpenClaw:**
 ```bash
-git clone https://github.com/gbessoni/seobuild-onpage.git ~/.claude/skills/seo-agi
+git clone https://github.com/gbessoni/seobuild-onpage.git ~/.agents/skills/seobuild-onpage
 ```
 
 **Codex:**
 ```bash
-git clone https://github.com/gbessoni/seobuild-onpage.git ~/.codex/skills/seo-agi
+git clone https://github.com/gbessoni/seobuild-onpage.git ~/.codex/skills/seobuild-onpage
 ```
 
-**Manual (any platform):**
+Then **restart your agent** so it picks up the new skill. Skills are loaded at session start, so a running session will not see it.
+
+**Updating later:**
 ```bash
-git clone https://github.com/gbessoni/seobuild-onpage.git ~/.claude/skills/seo-agi
+cd ~/.claude/skills/seobuild-onpage && git pull
+```
+
+If you have local changes (an edited `.env.example`, for example), stash them first so the pull does not abort:
+```bash
+cd ~/.claude/skills/seobuild-onpage && git stash && git pull && git stash pop
 ```
 
 ### Step 2: Install Python dependency
@@ -329,7 +329,7 @@ pip install requests
 
 ```bash
 mkdir -p ~/.config/seo-agi
-cp ~/.claude/skills/seo-agi/.env.example ~/.config/seo-agi/.env
+cp ~/.claude/skills/seobuild-onpage/.env.example ~/.config/seo-agi/.env
 ```
 
 Then edit `~/.config/seo-agi/.env` with your keys:
@@ -349,7 +349,7 @@ GSC_SERVICE_ACCOUNT_PATH=/path/to/service-account.json
 
 ```bash
 # Test the research pipeline (uses mock data, no API keys needed)
-python3 ~/.claude/skills/seo-agi/scripts/research.py "airport parking JFK" --mock --output=compact
+python3 ~/.claude/skills/seobuild-onpage/scripts/research.py "airport parking JFK" --mock --output=compact
 ```
 
 You should see SERP results, PAA questions, related keywords, and heading structure data. If you see that, you're good.
@@ -375,7 +375,7 @@ The skill auto-triggers on SEO content requests. It will:
 
 **Check if the skill is installed:**
 ```bash
-ls ~/.claude/skills/seo-agi/SKILL.md && echo "Installed" || echo "Not found"
+ls ~/.claude/skills/seobuild-onpage/SKILL.md && echo "Installed" || echo "Not found"
 ```
 
 **Check if API keys are configured:**
@@ -385,12 +385,12 @@ cat ~/.config/seo-agi/.env 2>/dev/null || echo "No .env file -- skill will use f
 
 **Test with live DataForSEO (if you have keys):**
 ```bash
-python3 ~/.claude/skills/seo-agi/scripts/research.py "best crm software" --output=compact
+python3 ~/.claude/skills/seobuild-onpage/scripts/research.py "best crm software" --output=compact
 ```
 
 **Run unit tests:**
 ```bash
-cd ~/.claude/skills/seo-agi
+cd ~/.claude/skills/seobuild-onpage
 python3 tests/test_env.py && python3 tests/test_serp_analyze.py && python3 tests/test_dataforseo.py
 ```
 
@@ -431,7 +431,7 @@ It's not AI replacing SEO expertise. It's SEO expertise finally having the right
 See "Verify Your Setup" above for full test commands. Quick version:
 
 ```bash
-cd ~/.claude/skills/seo-agi
+cd ~/.claude/skills/seobuild-onpage
 
 # Unit tests (no API keys needed)
 python3 tests/test_env.py && python3 tests/test_serp_analyze.py && python3 tests/test_dataforseo.py

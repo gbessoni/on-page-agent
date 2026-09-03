@@ -180,6 +180,11 @@ Before running any script, locate the skill root. This works across Claude Code,
 for dir in \
   "." \
   "${CLAUDE_PLUGIN_ROOT:-}" \
+  "$HOME/.claude/skills/seobuild-onpage" \
+  "$HOME/.agents/skills/seobuild-onpage" \
+  "$HOME/.codex/skills/seobuild-onpage" \
+  "$HOME/.gemini/extensions/seobuild-onpage" \
+  "$HOME/seobuild-onpage" \
   "$HOME/.claude/skills/seo-agi" \
   "$HOME/.agents/skills/seo-agi" \
   "$HOME/.codex/skills/seo-agi" \
@@ -840,7 +845,7 @@ When the user provides a target keyword and brief:
 
 2. **Research**: Run the data layer (combine discovery + script in one bash block):
    ```bash
-   for dir in "." "${CLAUDE_PLUGIN_ROOT:-}" "$HOME/.claude/skills/seo-agi" "$HOME/.agents/skills/seo-agi" "$HOME/.codex/skills/seo-agi" "$HOME/seo-agi"; do [ -n "$dir" ] && [ -f "$dir/scripts/research.py" ] && SKILL_ROOT="$dir" && break; done; python3 "${SKILL_ROOT}/scripts/research.py" "<keyword>" --output=json
+   for dir in "." "${CLAUDE_PLUGIN_ROOT:-}" "$HOME/.claude/skills/seobuild-onpage" "$HOME/.agents/skills/seobuild-onpage" "$HOME/.codex/skills/seobuild-onpage" "$HOME/seobuild-onpage" "$HOME/.claude/skills/seo-agi" "$HOME/.agents/skills/seo-agi" "$HOME/.codex/skills/seo-agi" "$HOME/seo-agi"; do [ -n "$dir" ] && [ -f "$dir/scripts/research.py" ] && SKILL_ROOT="$dir" && break; done; python3 "${SKILL_ROOT}/scripts/research.py" "<keyword>" --output=json
    ```
    If the script exits with an error (no DataForSEO creds), fall back in this order:
    - Try Ahrefs MCP tools (`serp-overview`, `keywords-explorer-overview`) if available
@@ -911,7 +916,7 @@ When rewriting an existing page:
 1. Fetch URL (WebFetch) or read local file
 2. Identify target keyword from title/H1 or ask user
 3. Run research against the keyword
-4. Run GSC data if available: `for dir in "." "${CLAUDE_PLUGIN_ROOT:-}" "$HOME/.claude/skills/seo-agi" "$HOME/.agents/skills/seo-agi" "$HOME/seo-agi"; do [ -n "$dir" ] && [ -f "$dir/scripts/gsc_pull.py" ] && SKILL_ROOT="$dir" && break; done; python3 "${SKILL_ROOT}/scripts/gsc_pull.py" "<site_url>" --keyword="<keyword>"`
+4. Run GSC data if available: `for dir in "." "${CLAUDE_PLUGIN_ROOT:-}" "$HOME/.claude/skills/seobuild-onpage" "$HOME/.agents/skills/seobuild-onpage" "$HOME/seobuild-onpage" "$HOME/.claude/skills/seo-agi" "$HOME/.agents/skills/seo-agi" "$HOME/seo-agi"; do [ -n "$dir" ] && [ -f "$dir/scripts/gsc_pull.py" ] && SKILL_ROOT="$dir" && break; done; python3 "${SKILL_ROOT}/scripts/gsc_pull.py" "<site_url>" --keyword="<keyword>"`
 5. Gap analysis: compare existing page vs research data. What's missing? What's thin? What fails the Reddit Test?
 6. Rewrite following gap report
 7. Output rewritten page + change summary (what changed and why)
