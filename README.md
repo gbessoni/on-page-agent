@@ -1,4 +1,4 @@
-# seobuild-onpage v2.2.0
+# seobuild-onpage v2.3.0
 
 ### One command. Competitive data in. Ranking pages out.
 
@@ -9,6 +9,14 @@ claude install-skill gbessoni/seobuild-onpage
 Most SEO tools tell you what's wrong with your site. This one writes the pages.
 
 `/seoagi "airport parking JFK"` pulls the current SERP, analyzes what's ranking, finds the gaps in their content, and writes you a complete page -- with the heading structure, depth, FAQ section, and schema markup that actually competes. Not thin content. Not keyword-stuffed filler. Pages backed by live data from the tools the pros use.
+
+**New in v2.3.0 -- AI SEO Correlation Protocols:**
+- **Outbound Citation Requirement** -- pages targeting AI Overviews must link out to at least 5 external authoritative sources with descriptive anchor text. Zero outbound links carries a severe citation penalty: an engine checking whether the page synthesizes real sources finds nothing to verify against.
+- **Strict Phrase Placement (Title + H1 only)** -- the exact-match keyword appears in exactly two places and nowhere else. H2/H3/H4 exact-match is now unconditionally forbidden. This retires the old competitor-ratio Forensic EMQ Check, which made H1 placement conditional.
+- **Entity-Fact Pairing** -- naming an entity is not a signal; binding it to a hard fact is. Every entity in a chunk must carry a time, place, cost, capacity, frequency, distance, or date. Crucial non-obvious information is the highest-weighted retrieval signal.
+- **Informational vs. Local Divergence** -- informational pages strip sales CTAs, free-estimate offers, and award mentions (they demote citation rate). Local Ask Maps pages feature local project counts, awards, and differentiators heavily. Same elements, opposite treatment, selected by detected intent.
+- **Anti-Boilerplate Internal Linking** -- site-wide repetitive in-content link blocks are banned; internal links must be contextual and unique to their chunk. The Recommended Spoke Pages block stays, because it is derived per-page from competitor anchor data rather than templated.
+- **63-point quality checklist** -- adds Outbound Citation, Strict Phrase Placement, Entity-Fact Pairing, Intent Divergence, and Anti-Boilerplate checks. Passing threshold raised to 54/63.
 
 **New in v2.2.0 -- Compliant Affiliate Monetization & Local Isolation:**
 - **Strict Local Service Isolation** -- local pages must target a single service+place ("Water Heater Repair Anaheim"), never a multi-service catch-all. AI parsers truncate stacked pages because they can't form a clean service-to-place association. N services in a city = N pages.
@@ -135,7 +143,7 @@ SEO-AGI:
   12. For rewrites: evaluates each legacy URL and recommends 301 (when topic
       survives and equity should consolidate) or 410 (when the URL is thin,
       cannibalizing, or out-of-circle and should be pruned)
-  13. Validates against 58-point quality checklist
+  13. Validates against 63-point quality checklist
   14. Prints scorecard so you see exactly what passed
 ```
 
@@ -190,7 +198,7 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - "Not For You" block: honest section telling readers when this option is a bad fit (trust signal competitors skip)
 - Information Gain Test: every page must contain content not found in the top 10 Google results
 
-**The 58-point quality checklist every page runs through (selected highlights):**
+**The 63-point quality checklist every page runs through (selected highlights):**
 - Information gain over top 10 Google results? Check.
 - Reddit Test: would a practitioner upvote this? Check.
 - Core answer in first 150 words? Check.
@@ -244,8 +252,13 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - Anti-NLP Stuffing -- body free of force-repeated NLP-tool entity lists (de-indexation risk)? Check.
 - Local Isolation -- local page targets one service+place, no multi-service stacking? Check.
 - GBP Inner-Link Directive -- local page tells user to point GBP at this URL, not homepage? Check.
+- Outbound Citations -- 5+ descriptive links to external authoritative sources? Check.
+- Strict Phrase Placement -- exact match in Title and H1 only, never H2/H3/H4? Check.
+- Entity-Fact Pairing -- entities bound to hard verifiable facts, not just named? Check.
+- Intent Divergence -- CTAs stripped if informational, awards featured if local? Check.
+- Anti-Boilerplate -- internal links contextual, no repeated site-wide blocks? Check.
 
-Pages scoring below 49/58 get flagged with specific items to fix. The scorecard is printed at the end of every output so you see exactly what passed.
+Pages scoring below 54/63 get flagged with specific items to fix. The scorecard is printed at the end of every output so you see exactly what passed.
 
 ---
 

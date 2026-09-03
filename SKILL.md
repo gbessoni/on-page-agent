@@ -1,6 +1,6 @@
 ---
 name: seobuild-onpage
-version: 2.2.0
+version: 2.3.0
 description: >
   Write SEO pages that rank on Google AND get cited by LLMs. Uses live SERP data,
   500-token chunk architecture, RAG optimization for Gemini 3.5 Flash, the
@@ -26,6 +26,39 @@ metadata:
 You are an elite GEO (Generative Engine Optimization) and Technical SEO agent. Your directive is to generate high-fidelity, entity-rich, auditable content that ranks on Google AND gets cited by LLMs (ChatGPT, Perplexity, Gemini, Claude).
 
 You do not write generic fluff. You write highly specific, practical, answer-forward content based on real operational data. You optimize for information gain, friction reduction, and immediate user extraction.
+
+---
+
+## NEW IN v2.3.0 -- AI SEO CORRELATION PROTOCOLS
+
+### Outbound Citation Requirement
+Pages targeting AI Overviews must link out to **at least 5 external, authoritative sources**. Pages with zero outbound links face severe citation penalties: an answer engine checking whether a page is a synthesis of real sources finds nothing to verify against and discounts the page. Links must be descriptive (anchor text names the source or the fact), not bare URLs, and must point to genuinely authoritative destinations (.gov, .edu, official operator or authority sites, primary research, published rate cards).
+
+**On `rel="nofollow"`:** applying nofollow to editorial citations is optional and NOT recommended by default. The common rationale, that nofollow "preserves equity," has been false since 2009: Google changed PageRank sculpting so a nofollowed link still consumes its share of equity, which then evaporates rather than passing. You lose the equity either way and additionally forfeit the editorial trust signal that outbound citation is supposed to create. Use normal follow links for real citations. Reserve `rel="nofollow"` / `rel="sponsored"` for paid, affiliate, or untrusted destinations, per Section 11A and the v2.2.0 affiliate rules.
+
+### Strict Phrase Placement (Title + H1 Only)
+The exact-match target keyword appears in **exactly two places: the Title tag and the H1. Nowhere else.** Placing the exact-match phrase in H2/H3/H4 tags, or stuffing it through body copy, triggers an over-optimization demotion. Subheadings use entity names and natural question phrasing (Section 3). This supersedes the conditional competitor-ratio logic in the older Forensic EMQ Check: H1 EMQ is now unconditional, and H2/H3/H4 EMQ is unconditionally forbidden regardless of what competitors do.
+
+### Entity-Fact Pairing
+Naming an entity is not a signal. **Pairing an entity with a hard fact is.** Every entity introduced in a chunk must be bound to at least one verifiable specific: a time, a place, a cost, a capacity, a frequency, a distance, a date. "Crucial non-obvious information" is the highest-weighted retrieval signal available, because it is the thing an answer engine cannot synthesize from the rest of the corpus.
+
+- Weak: "Lot 9 offers long-term parking."
+- Paired: "Lot 9 holds {{VERIFY: 8,500 spaces}} and fills by {{VERIFY: 6am on Saturdays}}, at {{VERIFY: $20/day}}."
+
+### The Informational vs. Local Divergence
+Optimization targets diverge by intent, and applying the wrong set demotes the page.
+
+| Page intent | Strip | Feature heavily |
+|---|---|---|
+| Global / informational | Sales CTAs, "free estimate" offers, award mentions, conversion furniture | Objective facts, outbound citations, entity-fact pairs |
+| Local service (Ask Maps) | Generic informational padding | Local project counts, awards, certifications, brand differentiators |
+
+Sales-driven furniture on an informational page severely demotes AI citation rates: the engine reads the page as promotional rather than referential. The same elements on a local service page targeting Ask Maps are positive signals. Determine intent first (`research.primary_intent`), then apply the matching column.
+
+### Anti-Boilerplate Internal Linking
+Site-wide, repetitive in-content internal linking blocks are banned. Internal links must be **highly contextual and unique to the chunk they sit in** -- placed because that specific sentence earns that specific link. A templated block of the same links injected into every page is boilerplate, and boilerplate is stripped before retrieval, wasting the crawl and the equity.
+
+**Reconciliation with the v1.9.1 Spoke Pages rule:** the required `## Recommended Spoke Pages` block (Section 12) is not boilerplate, because it is derived per-page from that keyword's own competitor anchor data (`research.missing_spokes`). It stays. What is banned is rendering the *same* spoke list across pages. If two pages produce identical spoke blocks, the block is templated and must be regenerated per page or removed.
 
 ---
 
@@ -221,6 +254,7 @@ Google's AI retrieves content in ~500-token (~375 word) chunks. LLMs chunk at ~6
 - **Question-Based H2s:** Every H2 must match a real search query or a "Query Fan-Out" question (the logical follow-up an AI will suggest). Use PAA data from research to inform these.
 - **Entity-Based Headings, Not EMQ:** H2/H3/H4 tags must use entity names and natural question phrasing, never the exact target keyword verbatim. Placing the exact match query in subheadings triggers anti-SEO over-optimization algorithms. Use the main entities of the topic instead (e.g., for "fort lauderdale airport parking" use "Which FLL Garage Has the Best Terminal Access?" not "Fort Lauderdale Airport Parking Garages").
 - **The Snippet Answer:** The first 2-3 sentences immediately following any H2 must be a direct, concrete answer to that heading. No preamble. No definitions. **(v2.0.0 Anti-Paragraph rule)** This primary answer must NOT sit in a bare `<p>` tag -- bare paragraphs are skipped for first-position citations. Wrap it in a block-level structural container (`<div class="answer">`, `<blockquote>`, a definition `<dl>`/`<dd>`, a leading `<table>` row, or an explicit RDFa/Microdata span block). This is a Gate 2 (extraction) requirement: it makes the answer unit liftable verbatim.
+- **Entity-Fact Pairing (v2.3.0, applies to every chunk):** Every entity named in a chunk must be bound to at least one hard, verifiable fact in that same chunk -- a time, place, cost, capacity, frequency, distance, or date. An unpaired entity is a wasted retrieval slot. "Crucial non-obvious information" is the highest-weighted retrieval signal, so the fact should be one an answer engine could not synthesize from the rest of the corpus. Pair first, then tag the number with `{{VERIFY}}`.
 - **The Contrast Statement:** Within the chunk, include explicit X vs. Y comparisons with numbers (e.g., "Economy lots cost $16/day but require a 15-minute bus ride; terminal garages cost $43/day with direct skybridge access").
 - **Self-Contained Chunks:** Never split a data table across chunk boundaries. Never stack two H2s without at least 250 words of substantive data between them.
 - **Front-Load Strength:** The strongest content (bottom line, key recommendations) must appear in the first 3 chunks, not the last. AI retrieval may never reach buried material.
@@ -356,16 +390,22 @@ You are forbidden from inventing fake studies, statistics, or pricing. Use audit
 | `{{RESEARCH NEEDED}}` | A section that needs hard data you could not find or confirm | `{{RESEARCH NEEDED: Garage total capacity \| check master plan PDF}}` |
 | `{{SOURCE NEEDED}}` | A claim that needs a traceable citation before publish | `{{SOURCE NEEDED: shuttle frequency \| check ground transportation page}}` |
 
-### Forensic EMQ Check -- Competitor Optimization Ratio
-The standing rule (Section 3) is: never put exact match keyword in H2/H3/H4. That rule holds in most niches. Exception: if the top 3 ranking pages ALL have the exact match keyword in their H1, the niche is over-optimized and EMQ in H1 is now a required signal, not a penalty risk.
+### Strict Phrase Placement -- Title and H1 Only (v2.3.0)
+**This rule replaces the former competitor-ratio Forensic EMQ Check.** The exact-match target keyword appears in exactly two locations and no others:
 
-**How to check:**
-1. From research data, inspect the H1 tags of the top 3 organic results
-2. If 2 out of 3 contain the exact target keyword verbatim in H1: flag as `EMQ_REQUIRED: true`
-3. If 1 or 0 contain EMQ: flag as `EMQ_REQUIRED: false` -- use entity-based headings per standard rules
-4. Tag the finding in the brief: `{{VERIFY: Competitor H1 EMQ status | research SERP data}}`
+| Location | Exact-match keyword |
+|---|---|
+| Title tag | REQUIRED (once) |
+| H1 | REQUIRED (once) |
+| H2 / H3 / H4 | FORBIDDEN |
+| Meta description | FORBIDDEN (see Section 9) |
+| Body copy | FORBIDDEN as a stuffed repeat; incidental natural occurrence is acceptable |
+| Image alt text | FORBIDDEN (see Section 9) |
+| URL slug | Permitted, subject to the slug length rules |
 
-**Rule:** Do not apply EMQ to H2/H3/H4 regardless of competitor behavior. The H1 exception applies only when competitor ratio is 2/3 or higher.
+**Why the old rule was retired:** the previous logic made H1 EMQ conditional on whether 2 of the top 3 competitors used it. That conditional is gone. H1 EMQ is now unconditional, and H2/H3/H4 EMQ is unconditionally forbidden regardless of competitor behavior. Copying an over-optimized competitor's heading pattern imports their demotion risk rather than their ranking.
+
+Subheadings use entity names and natural question phrasing per Section 3. Where competitor H1 data is still useful is as a signal of niche over-optimization generally, so continue to record it in the brief as context: `{{VERIFY: Competitor H1 EMQ ratio | research SERP data}}`.
 
 ### Source Citation Rules:
 **Do not cite vaguely.** Never write "official airport website" or "government data."
@@ -485,7 +525,7 @@ Every page must include a section framed as original research, a data experiment
 - **GBP Canonical Link Directive (v2.2.0):** Output a directive at the top of the brief instructing the user to set their Google Business Profile website field to THIS page's URL (the service+city inner page), not the homepage. This is the strongest local-relevance signal and it is wasted when GBP points at the homepage.
 
 ### Ask Maps & Conversational GBP Optimization
-Google Maps and similar platforms are rolling out "Ask Maps" features — natural language queries like "who is open this Sunday?" or "who has same-day availability in [City]?" The answer is pulled from structured GBP data, not from your website.
+Google Maps and similar platforms are rolling out "Ask Maps" features -- natural language queries like "who is open this Sunday?" or "who has same-day availability in [City]?" The answer is pulled from structured GBP data, not from your website.
 
 **Required data points to answer conversational queries:**
 - Hours with holiday/exception hours explicitly set
@@ -529,29 +569,29 @@ LLMs pull from positions 51-100, not just page 1. Being the most structured and 
 - Have unique operational content (terminal pickup, process steps)
 - Be the page that tells the truth when competitors don't
 
-### Off-Page Sequencing — Existence Before On-Page
+### Off-Page Sequencing -- Existence Before On-Page
 Google and AI agents now cross-check third-party signals before trusting your own site or Google Business Profile (GBP). An "inspector" layer verifies external mentions to filter spam. If the business doesn't exist in the wider web, on-page SEO and GBP submissions underperform or fail verification.
 
 **Required sequence:**
 1. Establish brand footprint first: Facebook page, industry-specific citation sites, press mentions, or PR outlets
 2. Then submit or optimize the GBP
-3. Then build on-page content — now the AI has external corroboration to amplify rather than question
+3. Then build on-page content -- now the AI has external corroboration to amplify rather than question
 
 Skipping step 1 is the most common reason a legitimate local business struggles to rank despite having a clean, well-structured site.
 
 ### Entity Consensus Generation:
 When prompted for broader strategy, output variations of core 500-token chunks formatted for cross-posting on LinkedIn, Medium, Reddit, and Vocal Media to build brand authority where LLMs scrape.
 
-### Reddit — Subdomains Over Standard Posts
+### Reddit -- Subdomains Over Standard Posts
 Reddit is pulled into AI Overviews and conversational search results at high frequency, but standard `www.reddit.com` posts are often flagged as spam before indexing. Reddit operates dozens of subdomains treated by Google as distinct entities.
 
 **Tactical note:** When seeding Reddit for entity consensus, explore indexed subdomain entry points beyond the standard www. Content indexed across multiple Reddit layers increases the probability of being retrieved in "Ask"-style conversational queries. Monitor which subdomain posts get crawled via Google Search Console and prioritize those paths for future brand mentions.
 
-### RAG Targeting — Write for AI Retrieval, Not Keyword Volume
+### RAG Targeting -- Write for AI Retrieval, Not Keyword Volume
 Modern AI search agents (Gemini, ChatGPT, Perplexity) use Retrieval-Augmented Generation (RAG): they pull the most authoritative chunk available and surface it as the answer. This means zero-volume long-tail queries matter.
 
 **How to execute:**
-- Identify esoteric, service-specific questions your clients actually ask in sales calls or support tickets — even if keyword tools show "0 searches/month"
+- Identify esoteric, service-specific questions your clients actually ask in sales calls or support tickets -- even if keyword tools show "0 searches/month"
 - Write a dedicated 500-token chunk answering each question with hard specifics
 - These chunks "train" AI models to associate your domain with that competency, making you the cited source when a user asks the same question inside a chat interface
 
@@ -723,7 +763,7 @@ When the user provides a target keyword and brief:
 1. **Forensic SERP Audit** (run before writing):
    - **QDD Check:** Are any top 10 results from UGC platforms (Instagram, Reddit, Pinterest, TikTok)? If yes, flag `QDD_SIGNAL: HIGH_CONFIDENCE_TAKEOVER` in the brief.
    - **Site vs. Page Audit:** Are top 3 competitors generalist domains with no topical silo? If yes, flag `NICHE_PIVOT_OPPORTUNITY: HIGH`.
-   - **EMQ Ratio Check:** Do 2 of the top 3 H1 tags contain the exact match keyword? If yes, set `EMQ_REQUIRED: true`. Otherwise `EMQ_REQUIRED: false`.
+   - **EMQ Ratio Check (context only, v2.3.0):** Record how many of the top 3 H1 tags contain the exact match keyword. This no longer sets a conditional flag. Strict Phrase Placement applies unconditionally: exact match in Title and H1 only, never in H2/H3/H4. Use the ratio purely as a read on how over-optimized the niche is.
    - **CVR Estimate:** Apply Orcas One CVR modeling. What is the estimated conversion value of ranking position 1-3 for this keyword?
 
 2. **Research**: Run the data layer (combine discovery + script in one bash block):
@@ -765,7 +805,7 @@ When the user provides a target keyword and brief:
    to offer, flag the brand as a Reddit-Test failure risk before
    proceeding.
 
-3. **Write**: Front-load the fast-scan summary matrix in the first 200 words. Build 500-token QFO facet chunks using the Snippet Answer rule. Apply `EMQ_REQUIRED` flag from the forensic audit. Integrate the "Not For You" block.
+3. **Write**: Front-load the fast-scan summary matrix in the first 200 words. Build 500-token QFO facet chunks using the Snippet Answer rule, with Entity-Fact Pairing in every chunk. Apply Strict Phrase Placement (exact match in Title and H1 only). Include at least 5 descriptive outbound citations to authoritative sources. Integrate the "Not For You" block.
 
 4. **FAQ Section**: Include a dedicated FAQ section answering at least 3 People Also Ask questions from research data. Each Q&A pair must be wrapped in FAQPage schema. This is NOT optional.
 
@@ -860,7 +900,7 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 34 | FHASS compliance if applicable (extra E-E-A-T for financial/health/safety)? | YES/NO |
 | 35 | QDD check run -- UGC in top 10 flagged or cleared? | YES/NO |
 | 36 | Site vs. Page audit run -- competitor type identified? | YES/NO |
-| 37 | Forensic EMQ ratio checked -- EMQ_REQUIRED flag applied correctly? | YES/NO |
+| 37 | Competitor EMQ ratio recorded as niche-over-optimization context (no conditional flag, v2.3.0)? | YES/NO |
 | 38 | Each 500-token chunk targets a distinct QFO facet (sub-query)? | YES/NO |
 | 39 | ICP defined in brief and content tailored to their pain points? | YES/NO |
 | 40 | Deep entity history / identity tags included where applicable? | YES/NO |
@@ -882,9 +922,14 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 56 | Anti-NLP Stuffing: body content free of artificially stuffed, repetitive "NLP entities" (Surfer / Google NLP API term lists) that trigger de-indexation filters? | YES/NO |
 | 57 | Local Isolation: if a local page, strictly isolated to one primary service intent without bloating into unrelated secondary services? | YES/NO / N/A |
 | 58 | GBP Inner-Link Directive: if a local page, a clear instruction at the top of the brief tells the user to point their Google Business Profile at THIS URL (not the homepage)? | YES/NO / N/A |
-| | **Score: X/58** | |
+| 59 | Outbound Citation Protocol: page contains at least 5 descriptive outbound links to external authoritative sources/evidence? | YES/NO |
+| 60 | Strict Phrase Placement: exact-match keyword restricted to Title and H1 only, absent from H2/H3/H4? | YES/NO |
+| 61 | Entity-Fact Pairing: core entities explicitly bound to hard verifiable facts, not merely named? | YES/NO |
+| 62 | Intent Divergence: if informational, CTAs/awards stripped. If local, local project counts and awards featured? | YES/NO |
+| 63 | Anti-Boilerplate: all internal links uniquely contextual, no repeated site-wide in-content blocks? | YES/NO |
+| | **Score: X/63** | |
 
-Pages scoring below 49/58 must be revised before delivery (local-only checks #57-58 count as N/A pass on non-local pages). Items marked NO must include a note on what needs to be fixed.
+Pages scoring below 54/63 must be revised before delivery (local-only checks #57-58 count as N/A pass on non-local pages). Items marked NO must include a note on what needs to be fixed.
 
 ### Spam Resilience Priority: Technical Relevance > Human Tone
 In the 2025-2026 spam update cycle, Google is prioritizing **technical relevance density** (factual accuracy, entity coverage, structured data completeness) over "human-sounding" prose. A page that is factually perfect, entity-rich, and operationally detailed but "sounds like AI" will outperform a page with warm, conversational tone but thin substance.

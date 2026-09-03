@@ -54,6 +54,15 @@ The SKILL.md is the living document. It contains:
   (Google Sites, Medium, Subreddits, Google Sheets, LinkedIn). Quality gates
   apply equally to off-page content -- thin tributaries net-harm the money
   page's entity signal. Generated via `scripts/tributary_gen.py`.
+- **AI SEO Correlation Protocols** (v2.3.0): 5+ descriptive outbound
+  citations required (zero = severe citation penalty; nofollow NOT
+  default, it has not preserved equity since 2009). Strict Phrase
+  Placement retires the conditional Forensic EMQ Check -- exact match
+  in Title and H1 only, never H2/H3/H4. Entity-Fact Pairing in every
+  chunk. Intent Divergence (informational strips CTAs/awards, local
+  features them). Anti-Boilerplate internal linking, with the
+  per-page-derived Spoke Pages block exempted. 63-point checklist,
+  threshold 54/63.
 - **Local Isolation + Compliant Affiliate** (v2.2.0): local pages must
   target one service+place (no multi-service stacking -- AI parsers
   truncate); local pages emit a GBP directive (point GBP at the inner

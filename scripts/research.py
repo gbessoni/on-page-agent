@@ -295,6 +295,44 @@ STRUCTURAL_DIRECTIVES = {
         "-- linked to ~25% de-indexation. Place entities structurally "
         "(headings, table cells, schema), never by repetition target."
     ),
+    # v2.3.0 -- AI SEO correlation protocols
+    "outbound_citations_min": 5,
+    "outbound_citation_rule": (
+        "REQUIRED: at least 5 descriptive outbound links to external "
+        "authoritative sources (.gov, .edu, operating authority, primary "
+        "research, published rate cards). Anchor text names the source or "
+        "the fact, never a bare URL. Zero outbound links = severe citation "
+        "penalty. Do NOT default to rel=nofollow: it has not preserved "
+        "equity since 2009 and forfeits the editorial trust signal. Reserve "
+        "nofollow/sponsored for paid, affiliate, or untrusted destinations."
+    ),
+    "strict_phrase_placement": (
+        "Exact-match target keyword appears in EXACTLY two places: the Title "
+        "tag and the H1. FORBIDDEN in H2/H3/H4, meta description, alt text, "
+        "and as stuffed body repeats. Unconditional -- supersedes the retired "
+        "competitor-ratio EMQ logic. Subheadings use entity names and natural "
+        "question phrasing."
+    ),
+    "entity_fact_pairing": (
+        "Every entity named in a chunk must be bound to at least one hard "
+        "verifiable fact in that same chunk (time, place, cost, capacity, "
+        "frequency, distance, date). An unpaired entity is a wasted retrieval "
+        "slot. Prefer facts an engine cannot synthesize from the rest of the "
+        "corpus. Tag numbers with {{VERIFY}}."
+    ),
+    "intent_divergence": (
+        "If primary_intent is informational/global: STRIP sales CTAs, free-"
+        "estimate offers, and award mentions (they demote AI citation rate). "
+        "If the page is local service targeting Ask Maps: FEATURE local "
+        "project counts, awards, certifications, and brand differentiators."
+    ),
+    "anti_boilerplate_linking": (
+        "Internal links must be uniquely contextual to the chunk they sit in. "
+        "FORBIDDEN: site-wide repetitive in-content link blocks -- boilerplate "
+        "is stripped before retrieval. The Recommended Spoke Pages block is "
+        "exempt only because it is derived per-page from missing_spokes; "
+        "identical spoke lists across pages mean it has become boilerplate."
+    ),
 }
 
 # Container tags that increase DOM nesting depth. HTML void elements never do.
@@ -908,6 +946,11 @@ def format_compact(research: dict) -> str:
         lines.append(f"  - Subheading entity synergy: {sd.get('subheading_entity_synergy', '?')}")
         lines.append(f"  - Two-gate target: {sd.get('two_gate_target', '?')}")
         lines.append(f"  - Anti-NLP stuffing: {sd.get('anti_nlp_stuffing', '?')}")
+        lines.append(f"  - Outbound citations (min {sd.get('outbound_citations_min', '?')}): {sd.get('outbound_citation_rule', '?')}")
+        lines.append(f"  - Strict phrase placement: {sd.get('strict_phrase_placement', '?')}")
+        lines.append(f"  - Entity-fact pairing: {sd.get('entity_fact_pairing', '?')}")
+        lines.append(f"  - Intent divergence: {sd.get('intent_divergence', '?')}")
+        lines.append(f"  - Anti-boilerplate linking: {sd.get('anti_boilerplate_linking', '?')}")
 
     # DOM nesting audit (v2.0.0)
     dn = research.get("dom_nesting", {})

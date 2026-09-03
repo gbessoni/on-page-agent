@@ -86,7 +86,7 @@ These issues override the score and require fixing regardless:
 
 ## v1.7.1 -- 45-Point Pass/Fail Checklist
 
-In addition to the rubric above, every page must pass the SKILL.md 58-point YES/NO checklist (Section 14). Pages scoring below 49/58 require revision before delivery. The four checks added in v1.7.1:
+In addition to the rubric above, every page must pass the SKILL.md 63-point YES/NO checklist (Section 14). Pages scoring below 54/63 require revision before delivery. The four checks added in v1.7.1:
 
 - [ ] **#42 -- Meta Entity Isolation Check.** The entity set used in the brief was sourced from the bolded query-matched terms inside competitor SERP descriptions (`research.meta_entities`), not from generic body-content entity extraction. Snippet entities are the tokens Google's own snippet generator already validated as relevant.
 - [ ] **#43 -- N-Gram AI Alignment Check.** The AI Summary Nugget at the top of the page contains 2 or more bigrams or trigrams pulled verbatim from the top 3 ranking competitors' body text (`research.target_ngrams`). LLM retrieval scoring rewards token-window overlap with consensus phrasing.
@@ -140,3 +140,15 @@ Two new local-only checks (score N/A pass on non-local pages). Pages scoring bel
 
 - [ ] **#57 -- Local Isolation Check.** If this is a local page, is it strictly isolated to one primary service intent (e.g., "Water Heater Repair Anaheim") without bloating the page with unrelated secondary services? Multi-service catch-all pages get truncated by AI parsers -- the extractor cannot form a clean service-to-place association. N services in a city = N separate pages, never one stacked page.
 - [ ] **#58 -- GBP Inner-Link Directive.** If this is a local page, is there a clear instruction at the top of the brief telling the user to point their Google Business Profile website field directly at THIS URL (the service+city inner page), not the homepage? A homepage-pointed GBP wastes the strongest local-relevance signal available.
+
+---
+
+## v2.3.0 -- AI SEO Correlation Protocols (63-Point)
+
+Five new checks derived from AI-citation correlation analysis. Pages scoring below 54/63 require revision before delivery. See SKILL.md "NEW IN v2.3.0", Section 3, and Strict Phrase Placement.
+
+- [ ] **#59 -- Outbound Citation Protocol.** Does the page contain at least 5 descriptive outbound links to external sources or evidence? Pages with zero outbound links face severe citation penalties: an engine checking whether the page synthesizes real sources finds nothing to verify against. Anchor text must name the source or the fact, never a bare URL. Destinations must be genuinely authoritative (.gov, .edu, operating authority, primary research, published rate cards). Note: do NOT default these to `rel="nofollow"` -- nofollow has not preserved equity since 2009 and it forfeits the editorial trust signal. Reserve nofollow/sponsored for paid, affiliate, or untrusted links.
+- [ ] **#60 -- Strict Phrase Placement.** Is the exact-match keyword restricted strictly to the Title tag and the H1, avoiding H2/H3/H4 entirely? Also absent from meta description and image alt text per Section 9. This is unconditional and supersedes the retired competitor-ratio EMQ logic. Copying an over-optimized competitor's heading pattern imports their demotion risk, not their ranking.
+- [ ] **#61 -- Entity-Fact Pairing.** Are core entities explicitly paired with hard, verifiable facts rather than just named? Every entity in a chunk must be bound to a time, place, cost, capacity, frequency, distance, or date in that same chunk. "Lot 9 offers long-term parking" fails. "Lot 9 holds 8,500 spaces and fills by 6am Saturdays at $20/day" passes. Crucial non-obvious information is the highest-weighted retrieval signal because the engine cannot synthesize it from elsewhere.
+- [ ] **#62 -- Intent Divergence Check.** If the page is informational or global, are aggressive CTAs, "free estimate" offers, and award mentions stripped? Sales furniture on an informational page makes the engine read it as promotional rather than referential and severely demotes citation rate. If the page is local service targeting Ask Maps, are local project counts, awards, certifications, and brand differentiators featured prominently? Same elements, opposite treatment. Check `research.primary_intent` before applying.
+- [ ] **#63 -- Anti-Boilerplate Check.** Are all internal links uniquely contextual rather than repetitive site-wide in-content blocks? A templated link block injected into every page is boilerplate and gets stripped before retrieval. The required `Recommended Spoke Pages` block is exempt only because it is derived per-page from that keyword's own competitor anchors; if two pages produce identical spoke lists, it has become boilerplate and must be regenerated.

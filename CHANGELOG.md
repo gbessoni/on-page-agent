@@ -2,6 +2,22 @@
 
 All notable changes to seo-agi are documented here.
 
+## [2.3.0] - 2026-09-03
+
+### Added
+- **Outbound Citation Requirement**: pages targeting AI Overviews must carry at least 5 descriptive outbound links to external authoritative sources. Zero outbound links carries a severe citation penalty.
+- **Strict Phrase Placement (Title + H1 only)**: exact-match keyword restricted to exactly two locations. H2/H3/H4 exact-match is now unconditionally forbidden.
+- **Entity-Fact Pairing** (Section 3, applies to every 500-token chunk): every entity named in a chunk must be bound to a hard verifiable fact in that same chunk.
+- **Informational vs. Local Divergence**: informational pages strip sales CTAs, free-estimate offers, and award mentions; local Ask Maps pages feature local project counts, awards, and differentiators. Selected by `research.primary_intent`.
+- **Anti-Boilerplate Internal Linking**: site-wide repetitive in-content link blocks banned. Internal links must be contextual and unique to their chunk.
+- **63-point quality checklist** with #59-#63. Passing threshold raised to 54/63.
+- Five new `STRUCTURAL_DIRECTIVES` entries in `scripts/research.py` (`outbound_citations_min`, `outbound_citation_rule`, `strict_phrase_placement`, `entity_fact_pairing`, `intent_divergence`, `anti_boilerplate_linking`), surfaced in compact/brief/JSON output.
+
+### Changed / Retired
+- **The Forensic EMQ Check is retired.** The former rule made H1 exact-match conditional on whether 2 of the top 3 competitors used it (`EMQ_REQUIRED` flag). That conditional is gone: H1 placement is now unconditional and H2/H3/H4 is unconditionally forbidden. Copying an over-optimized competitor's heading pattern imports their demotion risk, not their ranking. Competitor EMQ ratio is still recorded, but as niche-over-optimization context only. Execution Protocol step 1, step 3, and checklist item #37 updated accordingly.
+- **`rel="nofollow"` on citations is documented as optional and not recommended by default.** The requested rationale ("preserve equity") has been false since 2009: Google changed PageRank sculpting so a nofollowed link still consumes its share of equity, which then evaporates rather than passing. You lose the equity either way and additionally forfeit the editorial trust signal. Nofollow/sponsored remains correct for paid, affiliate, and untrusted links.
+- **Anti-Boilerplate reconciled with the v1.9.1 Spoke Pages rule.** The required `Recommended Spoke Pages` block is exempt because it is derived per-page from `missing_spokes`. Identical spoke lists across pages mean it has become boilerplate and must be regenerated.
+
 ## [2.2.0] - 2026-06-03
 
 ### Added

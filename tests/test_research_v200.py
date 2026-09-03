@@ -126,6 +126,14 @@ def test_structural_directives_shape():
     assert "anti_nlp_stuffing" in sd
     assert "FORBIDDEN" in sd["anti_nlp_stuffing"]
     assert "de-indexation" in sd["anti_nlp_stuffing"]
+    # v2.3.0: AI SEO correlation protocols
+    assert sd["outbound_citations_min"] == 5
+    assert "nofollow" in sd["outbound_citation_rule"]
+    assert "Title" in sd["strict_phrase_placement"]
+    assert "H2/H3/H4" in sd["strict_phrase_placement"]
+    assert "verifiable fact" in sd["entity_fact_pairing"]
+    assert "informational" in sd["intent_divergence"]
+    assert "boilerplate" in sd["anti_boilerplate_linking"]
 
 
 if __name__ == "__main__":
