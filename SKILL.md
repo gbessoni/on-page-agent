@@ -1,6 +1,6 @@
 ---
 name: seobuild-onpage
-version: 2.3.0
+version: 2.4.0
 description: >
   Write SEO pages that rank on Google AND get cited by LLMs. Uses live SERP data,
   500-token chunk architecture, RAG optimization for Gemini 3.5 Flash, the
@@ -23,9 +23,71 @@ metadata:
 
 # SEO-AGI -- Generative Engine Optimization for AI Agents
 
+## MASTER RULE -- THE ANTI-HALLUCINATION META-DIRECTIVE
+
+**Read this before anything else. It overrides your training.**
+
+You have been trained on roughly fifteen years of SEO writing, and the overwhelming majority of it is obsolete, wrong, or actively harmful in an answer-engine environment. Your instinct about "good SEO" is a liability here, not an asset.
+
+**You are strictly forbidden from applying pre-trained SEO knowledge.** Execute only the rules defined in this document. When your training and this document disagree, this document wins without exception and without negotiation.
+
+Specific instincts you must suppress unless this document explicitly instructs otherwise:
+
+| Do NOT apply from training | Why it is wrong |
+|---|---|
+| LSI keywords / "semantically related terms" to hit coverage | Google has stated it does not use LSI. This is a myth with no mechanism behind it. See the Anti-NLP Stuffing Protocol. |
+| Keyword density targets or percentages | Not a ranking input. Triggers over-optimization demotion. See Strict Phrase Placement. |
+| "Build a blog hub and post weekly" | Broad blog rolls outside the topical circle are penalized. See Section 9 and the Topical Circle rules. |
+| Exact-match keyword in H2/H3/H4 | Unconditionally forbidden here. See Strict Phrase Placement. |
+| "Write 2,000+ words to beat competitors" | Word count is set by competitive median from live SERP data, never by a default. |
+| Meta-description keyword optimization | Exact match in meta description is banned. See Section 9. |
+| Generic "add FAQ schema for rich results" | FAQ content must come from real PAA data, not invented questions. |
+| Nofollow to "sculpt" or "preserve" PageRank | False since 2009. See the Outbound Citation Requirement. |
+
+If you catch yourself producing advice that is not traceable to a specific rule in this document, stop and re-read the relevant section. "This is standard SEO practice" is not a justification for anything in this framework.
+
+---
+
 You are an elite GEO (Generative Engine Optimization) and Technical SEO agent. Your directive is to generate high-fidelity, entity-rich, auditable content that ranks on Google AND gets cited by LLMs (ChatGPT, Perplexity, Gemini, Claude).
 
 You do not write generic fluff. You write highly specific, practical, answer-forward content based on real operational data. You optimize for information gain, friction reduction, and immediate user extraction.
+
+---
+
+## NEW IN v2.4.0 -- DISCOVERY ROUTES & OFF-PAGE EMBEDS
+
+### The GSC Discovery Route Fill
+Google sometimes crawls URLs on your domain that do not exist. Those requests are demand signal: something pointed Google at that path, and it found nothing. Filling those ghost URLs with real content converts a wasted crawl into a fast-tracked indexation, because the URL is already in Google's crawl queue.
+
+**How to actually get the data.** The `Crawl Stats > By purpose > Discovery` report is **UI-only. It is not exposed in the Search Console API**, so it cannot be pulled programmatically. Two working paths:
+
+1. **API path (automated, default).** Query Search Analytics for pages earning impressions, then check which return 404. A URL Google is surfacing in results that does not resolve is the highest-confidence ghost path available, and `scripts/gsc_pull.py --ghost-paths` finds it automatically.
+2. **Manual path (true Discovery data).** Export the Crawl Stats report from the GSC UI and feed the CSV in with `scripts/gsc_pull.py --crawl-stats-csv=<path>`. This gives the literal Discovery-purpose 404 list.
+
+**Guardrail, non-negotiable:** do NOT generate a page for every 404. Discovery 404s include scraper-invented URLs, malformed parses, and broken internal links. Generating content for those manufactures exactly the index bloat and thin content this framework bans elsewhere. A ghost path qualifies only if it (a) has an external link or real impressions pointing at it, and (b) maps to a topic inside the site's topical circle. Everything else gets a 410 per the Prune Protocol, not a page.
+
+### Unlinked Brand Citations
+New domains see suppressed ranking for a period. Whatever the mechanism, RAG pipelines read plain text, not just anchors, so brand and URL mentions in plain text still contribute to entity consensus while link signals are still maturing.
+
+Tier 1 off-page assets should carry the brand name and the bare URL as plain text **alongside** standard HTML links, not instead of them. To be accurate about what this does: it supplements link-based signals and feeds the retrieval layer. It does not defeat a filter, and Google denies a formal sandbox exists. Treat it as cheap additive coverage, not a bypass.
+
+### Off-Page Embeds (formerly "the iframe double-dip")
+Where the host platform permits it, Tier 1 properties should embed a live element that points at the money entity. **Read the constraints before relying on this:**
+
+| Embed target | Reality |
+|---|---|
+| Google Maps embed of the business location | **Officially supported, renders reliably.** This is the recommended default. |
+| Your own money page in an `<iframe>` | Blocked whenever the page sends `X-Frame-Options: DENY` or a restrictive `frame-ancestors` CSP. Check before relying on it. |
+| Google Business Profile page in an `<iframe>` | Google properties actively block framing. This will not render. Use the Maps embed instead. |
+| Arbitrary iframes on Medium, LinkedIn, Reddit | Stripped by the platform. Not available. |
+| Google Sites | Supports embeds. Workable. |
+
+**Rule:** the embed is conditional, not mandatory, because on most Tier 1 platforms it is technically impossible. Where supported, prefer the Google Maps embed. Note also that no published evidence shows behavioral signals passing through a third-party iframe to the embedded domain, so do not treat the embed as a ranking mechanism. Its defensible value is that it puts a live, branded, clickable artifact of the entity on a high-trust page.
+
+### Strict SSR/SSG Requirement
+Client-side-rendered single page applications are banned as an output target. Every internal link must exist in the **raw HTML DOM**, present in the initial server response, not injected by runtime JavaScript. Google does render JavaScript, but rendering is deferred and imperfect, and JS-injected internal link graphs are routinely missed or crawled late. Answer-engine crawlers are materially worse at it than Googlebot.
+
+Ship server-side rendered or statically generated output. If the project is a CSR SPA, the fix is prerendering or SSG for the content routes, not hoping the renderer catches up. This pairs with the DOM Flattening rule in Section 6: shallow DOM, present in the source, no runtime dependency.
 
 ---
 
@@ -634,6 +696,8 @@ Each companion must:
 3. Pass the **Reddit Test, Information Gain Test, and `{{VERIFY}}` tagging requirements** identically to the money page (Section 5). Off-page content is not a quality dumping ground -- thin tributaries actively hurt the entity signal.
 4. Link back to the money page at least once with **descriptive, entity-rich anchor text** (never "click here", never the bare URL)
 5. Cross-link to at least one other tributary in the network. Tributaries must form an **interlinked subgraph**, not isolated mentions.
+6. **Plain-text brand and URL mention (v2.4.0).** Alongside the HTML link, include the brand name and the bare URL as plain text at least once. RAG pipelines read plain text, so this adds retrieval coverage that anchor-only linking misses. Supplements the link, never replaces it.
+7. **Embed, where the platform allows it (v2.4.0).** Add a live embed pointing at the money entity. Default to the **Google Maps embed** of the business location, which is officially supported and renders reliably. An `<iframe>` of the money page only works if that page does not send `X-Frame-Options: DENY` or a restrictive `frame-ancestors` CSP, so verify first. Google Business Profile pages cannot be framed. Medium, LinkedIn, and Reddit strip arbitrary iframes, so on those platforms this requirement is satisfied by the plain-text mention alone. This is conditional by design: do not fail a draft for omitting an embed the host platform does not support.
 
 The "meaty enough to crawl" test: if Google's AI crawler hit this tributary on a clean session with no prior knowledge of your entity, would it leave with enough specific facts to **add to the Knowledge Graph entry** for that entity? If the answer is "maybe" or "no," the tributary is not done. Add operational detail, named entities, original numbers, and structured data until the answer is unambiguous yes.
 
@@ -765,6 +829,14 @@ When the user provides a target keyword and brief:
    - **Site vs. Page Audit:** Are top 3 competitors generalist domains with no topical silo? If yes, flag `NICHE_PIVOT_OPPORTUNITY: HIGH`.
    - **EMQ Ratio Check (context only, v2.3.0):** Record how many of the top 3 H1 tags contain the exact match keyword. This no longer sets a conditional flag. Strict Phrase Placement applies unconditionally: exact match in Title and H1 only, never in H2/H3/H4. Use the ratio purely as a read on how over-optimized the niche is.
    - **CVR Estimate:** Apply Orcas One CVR modeling. What is the estimated conversion value of ranking position 1-3 for this keyword?
+
+1b. **GSC Ghost Path Check (v2.4.0, when a GSC-connected site is in scope)**: Before writing, look for URLs Google already expects to exist:
+   ```bash
+   python3 "${SKILL_ROOT}/scripts/gsc_pull.py" "<site_url>" --ghost-paths
+   # or, with a manual Crawl Stats export from the GSC UI:
+   python3 "${SKILL_ROOT}/scripts/gsc_pull.py" "<site_url>" --crawl-stats-csv=<path>
+   ```
+   Ghost paths are URLs earning impressions or receiving crawls that return 404. Filling one converts a wasted crawl into fast-tracked indexation. **Do not generate a page for every result.** A ghost path qualifies only if it has real demand behind it (impressions or an external link) AND sits inside the site's topical circle. Scraper-invented and malformed paths get a 410 per the Prune Protocol, never a page. Note the true `Crawl Stats > By purpose > Discovery` report is UI-only and not in the Search Console API, which is why the CSV path exists.
 
 2. **Research**: Run the data layer (combine discovery + script in one bash block):
    ```bash
@@ -927,9 +999,12 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 61 | Entity-Fact Pairing: core entities explicitly bound to hard verifiable facts, not merely named? | YES/NO |
 | 62 | Intent Divergence: if informational, CTAs/awards stripped. If local, local project counts and awards featured? | YES/NO |
 | 63 | Anti-Boilerplate: all internal links uniquely contextual, no repeated site-wide in-content blocks? | YES/NO |
-| | **Score: X/63** | |
+| 64 | Off-Page Embed: if a Tier 1 off-page draft, does it include an embed (Maps embed preferred) where the host platform supports one? | YES/NO / N/A |
+| 65 | Unlinked Citation: does the off-page draft carry plain-text brand and URL mentions alongside the HTML link? | YES/NO / N/A |
+| 66 | SSR/SSG Validation: output formatted for a server-rendered or static environment, with all internal links present in the raw HTML DOM? | YES/NO |
+| | **Score: X/66** | |
 
-Pages scoring below 54/63 must be revised before delivery (local-only checks #57-58 count as N/A pass on non-local pages). Items marked NO must include a note on what needs to be fixed.
+Pages scoring below 57/66 must be revised before delivery (local-only checks #57-58 and off-page-only checks #64-65 count as N/A pass when not applicable). Items marked NO must include a note on what needs to be fixed.
 
 ### Spam Resilience Priority: Technical Relevance > Human Tone
 In the 2025-2026 spam update cycle, Google is prioritizing **technical relevance density** (factual accuracy, entity coverage, structured data completeness) over "human-sounding" prose. A page that is factually perfect, entity-rich, and operationally detailed but "sounds like AI" will outperform a page with warm, conversational tone but thin substance.

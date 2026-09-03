@@ -1,4 +1,4 @@
-# seobuild-onpage v2.3.0
+# seobuild-onpage v2.4.0
 
 ### One command. Competitive data in. Ranking pages out.
 
@@ -9,6 +9,14 @@ claude install-skill gbessoni/seobuild-onpage
 Most SEO tools tell you what's wrong with your site. This one writes the pages.
 
 `/seoagi "airport parking JFK"` pulls the current SERP, analyzes what's ranking, finds the gaps in their content, and writes you a complete page -- with the heading structure, depth, FAQ section, and schema markup that actually competes. Not thin content. Not keyword-stuffed filler. Pages backed by live data from the tools the pros use.
+
+**New in v2.4.0 -- Discovery Routes & Off-Page Embeds:**
+- **The Anti-Hallucination Meta-Directive** -- a new MASTER RULE at the top of SKILL.md. LLMs are trained on fifteen years of largely obsolete SEO writing, so the agent is now explicitly forbidden from applying pre-trained SEO instincts (LSI keywords, keyword density, blog hubs, "write 2,000 words") and must execute only the rules in the document. Includes a table of the specific instincts to suppress and why each is wrong.
+- **GSC Discovery Route Fill** -- find URLs Google already expects to exist and fill them. `gsc_pull.py --ghost-paths` finds pages earning impressions that return 404, which is the highest-confidence signal available through the API. `--crawl-stats-csv` ingests a manual Crawl Stats export for the literal Discovery list, because that report is UI-only and not in the Search Console API.
+- **Unlinked Brand Citations** -- Tier 1 off-page drafts now carry plain-text brand and URL mentions alongside HTML links. RAG pipelines read plain text, so this adds retrieval coverage anchor-only linking misses.
+- **Off-Page Embeds** -- Tier 1 drafts embed a live artifact pointing at the money entity where the platform allows it, defaulting to the officially supported Google Maps embed. Conditional by design, since most Tier 1 platforms block arbitrary iframes.
+- **Strict SSR/SSG Requirement** -- client-side-rendered SPAs are banned as an output target. Every internal link must exist in the raw HTML DOM of the initial server response, because JS-injected link graphs are routinely missed or crawled late.
+- **66-point quality checklist** -- adds Off-Page Embed, Unlinked Citation, and SSR/SSG Validation. Passing threshold raised to 57/66.
 
 **New in v2.3.0 -- AI SEO Correlation Protocols:**
 - **Outbound Citation Requirement** -- pages targeting AI Overviews must link out to at least 5 external authoritative sources with descriptive anchor text. Zero outbound links carries a severe citation penalty: an engine checking whether the page synthesizes real sources finds nothing to verify against.
@@ -143,7 +151,7 @@ SEO-AGI:
   12. For rewrites: evaluates each legacy URL and recommends 301 (when topic
       survives and equity should consolidate) or 410 (when the URL is thin,
       cannibalizing, or out-of-circle and should be pruned)
-  13. Validates against 63-point quality checklist
+  13. Validates against 66-point quality checklist
   14. Prints scorecard so you see exactly what passed
 ```
 
@@ -198,7 +206,7 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - "Not For You" block: honest section telling readers when this option is a bad fit (trust signal competitors skip)
 - Information Gain Test: every page must contain content not found in the top 10 Google results
 
-**The 63-point quality checklist every page runs through (selected highlights):**
+**The 66-point quality checklist every page runs through (selected highlights):**
 - Information gain over top 10 Google results? Check.
 - Reddit Test: would a practitioner upvote this? Check.
 - Core answer in first 150 words? Check.
@@ -257,8 +265,11 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - Entity-Fact Pairing -- entities bound to hard verifiable facts, not just named? Check.
 - Intent Divergence -- CTAs stripped if informational, awards featured if local? Check.
 - Anti-Boilerplate -- internal links contextual, no repeated site-wide blocks? Check.
+- Off-Page Embed -- Tier 1 draft carries a Maps embed where the platform allows? Check.
+- Unlinked Citation -- plain-text brand and URL mentions alongside the link? Check.
+- SSR/SSG -- internal links present in the raw HTML DOM, not JS-injected? Check.
 
-Pages scoring below 54/63 get flagged with specific items to fix. The scorecard is printed at the end of every output so you see exactly what passed.
+Pages scoring below 57/66 get flagged with specific items to fix. The scorecard is printed at the end of every output so you see exactly what passed.
 
 ---
 

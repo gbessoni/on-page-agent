@@ -14,7 +14,10 @@ scripts/
                          meta_entities (bolded snippet phrases),
                          target_ngrams (top 3 competitor bigrams/trigrams),
                          primary_intent + secondary_intent dual mapping.
-  gsc_pull.py         -- CLI: Google Search Console data
+  gsc_pull.py         -- CLI: Google Search Console data. v2.4.0 adds
+                         --ghost-paths (impression-earning URLs that 404)
+                         and --crawl-stats-csv (manual Discovery export).
+                         Crawl Stats is UI-only, not in the GSC API.
   tributary_gen.py    -- CLI: Generates Tier 1/Tier 2 companion content
                          (Google Sites, Medium, Subreddit, Google Sheets,
                          LinkedIn) topically derived from the money page's
@@ -54,6 +57,17 @@ The SKILL.md is the living document. It contains:
   (Google Sites, Medium, Subreddits, Google Sheets, LinkedIn). Quality gates
   apply equally to off-page content -- thin tributaries net-harm the money
   page's entity signal. Generated via `scripts/tributary_gen.py`.
+- **MASTER RULE: Anti-Hallucination Meta-Directive** (v2.4.0): at the
+  top of SKILL.md. The agent must not apply pre-trained SEO knowledge
+  (LSI, keyword density, blog hubs, arbitrary word counts) and executes
+  only the rules in the document. Table of instincts to suppress.
+- **Discovery Routes & Off-Page Embeds** (v2.4.0): `gsc_pull.py
+  --ghost-paths` finds impression-earning URLs that 404;
+  `--crawl-stats-csv` ingests the manual export (Crawl Stats is UI-only,
+  not in the GSC API). Junk-path filter prevents mass-generating pages
+  for exploit probes. Tier 1 drafts get plain-text brand/URL mentions
+  and a conditional Maps embed. CSR SPAs banned; internal links must be
+  in the raw HTML DOM. 66-point checklist, threshold 57/66.
 - **AI SEO Correlation Protocols** (v2.3.0): 5+ descriptive outbound
   citations required (zero = severe citation penalty; nofollow NOT
   default, it has not preserved equity since 2009). Strict Phrase

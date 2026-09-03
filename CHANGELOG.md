@@ -2,6 +2,23 @@
 
 All notable changes to seo-agi are documented here.
 
+## [2.4.0] - 2026-09-03
+
+### Added
+- **MASTER RULE: The Anti-Hallucination Meta-Directive** at the very top of SKILL.md. The agent is explicitly forbidden from applying pre-trained SEO knowledge and must execute only the rules in the document. Includes a table of eight specific instincts to suppress (LSI keywords, keyword density, blog hubs, exact-match in H2/H3/H4, arbitrary word-count targets, meta-description keyword optimization, invented FAQ schema, nofollow PageRank sculpting) with the reason each is wrong.
+- **GSC Discovery Route Fill**: `scripts/gsc_pull.py --ghost-paths` finds URLs earning impressions in Search Analytics that return 404, plus `--crawl-stats-csv` to ingest a manual Crawl Stats export. Includes a junk-path filter that blocks exploit probes, scraper-invented URLs, and malformed paths from ever becoming generated pages.
+- **Unlinked Brand Citations**: Section 11A companion drafts now require plain-text brand and URL mentions alongside HTML links, since RAG pipelines read plain text.
+- **Off-Page Embeds**: Section 11A companion drafts embed a live artifact pointing at the money entity where the platform supports it.
+- **Strict SSR/SSG Requirement**: client-side-rendered SPAs banned as an output target; internal links must exist in the raw HTML DOM of the initial server response.
+- **66-point quality checklist** with #64 Off-Page Embed, #65 Unlinked Citation, #66 SSR/SSG Validation. Threshold raised to 57/66.
+- New test file `tests/test_gsc_ghost_paths.py` (8 tests: junk filtering, Discovery-only CSV isolation, alternate CSV headers, output guardrails).
+
+### Corrected against the original spec
+- **Crawl Stats is not available in the Search Console API.** The requested "query the Crawl Stats > By purpose > Discovery filter" cannot be implemented: the API surface is Search Analytics, Sites, Sitemaps, and URL Inspection only, and Crawl Stats is a UI-only report. Implemented two working paths instead: an API-based ghost-path finder (impressions + 404) and a manual CSV ingestion path for the literal Discovery list.
+- **A mass-generation guardrail was added to the Discovery Route Fill.** Generating a page for every Discovery 404 would manufacture the exact index bloat and thin content the framework bans, because that list includes scraper-invented and malformed URLs. A ghost path now qualifies only with real demand behind it AND topical-circle fit; everything else gets a 410 per the Prune Protocol.
+- **The iframe requirement is conditional, not mandatory, and retitled "Off-Page Embeds."** Mandating it would have created a rule that is impossible to satisfy on most Tier 1 platforms: money pages sending `X-Frame-Options: DENY` cannot be framed, Google Business Profile pages actively block framing, and Medium, LinkedIn, and Reddit strip arbitrary iframes. The Google Maps embed is documented as the recommended default because it is officially supported and renders. The claim that behavioral signals pass through a third-party iframe is not stated as fact, as no published evidence supports it.
+- **"Sandbox bypass" reframed as supplemental coverage.** The plain-text mention tactic ships as specified, but is described as supplementing link signals and feeding the retrieval layer rather than defeating a filter. Google denies a formal sandbox exists.
+
 ## [2.3.0] - 2026-09-03
 
 ### Added
